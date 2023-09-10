@@ -1,0 +1,25 @@
+.popup__field-error {
+  min-height: 30px;
+  margin: 5px 36px 0;
+  color: #f00;
+  width: 100%;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  pointer-events: none;
+  max-width: 358px;
+}
+
+@media screen and (max-width: 540px) {
+  .popup__field-error {
+    max-width: 238px;
+    margin: 5px 22px 0;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .popup__field-error {
+    max-width: 238px;
+    margin: 5px 22px 0;
+  }
+}

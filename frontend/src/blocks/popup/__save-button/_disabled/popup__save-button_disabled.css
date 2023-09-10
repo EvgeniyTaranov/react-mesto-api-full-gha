@@ -1,0 +1,7 @@
+.popup__save-button_disabled {
+  color: #000000;
+  border: 1px solid #000000;
+  opacity: 0.2;
+  background: transparent;
+  pointer-events: none;
+}
