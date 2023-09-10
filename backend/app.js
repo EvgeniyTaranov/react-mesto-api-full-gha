@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const NotFoundError = require('./errors/notFoundError');
@@ -13,6 +14,8 @@ const INTERNAL_SERVER_ERROR = 500;
 const { PORT = 3000 } = process.env;
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
