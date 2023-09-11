@@ -7,7 +7,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
-const UnauthorizedError = require('../errors/unauthorizedError');
+// const UnauthorizedError = require('../errors/unauthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -97,38 +97,37 @@ module.exports.updateAvatar = (req, res, next) => {
     });
 };
 
-module.exports.login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
-
-    if (!user) {
-      throw new UnauthorizedError('Неправильный email или пароль');
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedError('Неправильный email или пароль');
-    }
-
-    const token = jwt.sign(
-      { _id: user._id },
-      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-      { expiresIn: '7d' },
-    );
-
-    res.cookie('jwt', token, {
-      maxAge: 3600000 * 24 * 7,
-      httpOnly: true,
-      sameSite: true,
-      secure: true, // Set to true if running over HTTPS
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'key-secret',
+        { expiresIn: '7d' },
+      );
+      const userAgent = req.get('User-Agent');
+      const regEx = /Chrome\/\d+/;
+      if (userAgent.match(regEx) && userAgent.match(regEx).toString().replace('Chrome/', '') > 80) {
+        res.cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: 'None',
+          secure: true,
+        });
+      } else {
+        res.cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: 'Strict',
+        });
+      }
+      res.send({ jwt: token })
+        .end();
+    })
+    .catch((err) => {
+      next(err);
     });
-
-    res.send({ jwt: token });
-  } catch (err) {
-    next(err);
-  }
 };
 
 module.exports.logout = (req, res) => {

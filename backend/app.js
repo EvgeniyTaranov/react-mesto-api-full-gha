@@ -19,13 +19,15 @@ const corsOptions = {
   origin: ['http://localhost:3000',
     'http://localhost:4000',
     'https://api.evgeniytaranov.nomoredomainsicu.ru',
-    'http://api.evgeniytaranov.nomoredomainsicu.ru'],
+    'http://api.evgeniytaranov.nomoredomainsicu.ru',
+    'https://evgeniytaranov.nomoredomainsicu.ru',
+    'http://evgeniytaranov.nomoredomainsicu.ru'],
   credentials: true,
 };
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 
 app.use(express.json());
 
