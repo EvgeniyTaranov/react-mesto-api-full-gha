@@ -97,33 +97,66 @@ module.exports.updateAvatar = (req, res, next) => {
     });
 };
 
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+//   User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const token = jwt.sign(
+//         { _id: user._id },
+//         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+//         { expiresIn: '7d' },
+//       );
+//       const userAgent = req.get('User-Agent');
+//       const regEx = /Chrome\/(\d+)/;
+//       const isChrome = userAgent.match(regEx);
+
+//       const cookieOptions = {
+//         maxAge: 3600000 * 24 * 7,
+//         httpOnly: true,
+//         secure: true,
+//         sameSite: 'None',
+//       };
+
+//       if (!isChrome || (isChrome && parseInt(isChrome[1], 10) <= 80)) {
+//         cookieOptions.sameSite = 'Strict';
+//       }
+
+//       res.cookie('jwt', token, cookieOptions);
+
+//       res.send({ jwt: token });
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'key-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
       const userAgent = req.get('User-Agent');
-      const regEx = /Chrome\/(\d+)/;
-      const isChrome = userAgent.match(regEx);
-
-      const cookieOptions = {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-      };
-
-      if (!isChrome || (isChrome && parseInt(isChrome[1], 10) <= 80)) {
-        cookieOptions.sameSite = 'Strict';
+      const regEx = /Chrome\/\d+/;
+      if (userAgent.match(regEx) && userAgent.match(regEx).toString().replace('Chrome/', '') > 80) {
+        res.cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: 'None',
+          secure: true,
+        });
+      } else {
+        res.cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: 'Strict',
+        });
       }
-
-      res.cookie('jwt', token, cookieOptions);
-
-      res.send({ jwt: token });
+      res.send({ jwt: token })
+        .end();
     })
     .catch((err) => {
       next(err);
