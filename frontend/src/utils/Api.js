@@ -11,17 +11,45 @@ class Api {
     return res.json();
   }
 
-  // Карточки
-  async getCards() {
-    const res = await fetch(`${this._baseUrl}/cards`, {
+  getProfile() {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: 'GET',
       credentials: 'include',
-      headers: this._headers
-    });
-    return this._getResponseData(res);
+      headers: this._headers,
+    }).then(this._getResponseData)
   }
 
-  async addCard(name, link) {
-    const res = await fetch(`${this._baseUrl}/cards`, {
+  getCards() {
+    return fetch(`${this._baseUrl}/cards`, {
+      credentials: 'include',
+      headers: this._headers,
+    }).then(this._getResponseData)
+  }
+
+  editProfile(name, about) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      credentials: 'include',
+      method: 'PATCH',
+      body: JSON.stringify({
+        name: name,
+        about: about
+      })
+    }).then(this._getResponseData)
+  }
+
+  updateUserPic(avatarLink) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: this._headers,
+      body: JSON.stringify({
+        avatar: avatarLink
+      })
+    }).then(this._getResponseData)
+  }
+
+  addCard(name, link) {
+    return fetch(`${this._baseUrl}/cards`, {
       method: 'POST',
       credentials: 'include',
       headers: this._headers,
@@ -29,68 +57,30 @@ class Api {
         name,
         link
       })
-    });
-    return this._getResponseData(res);
+    }).then(this._getResponseData)
   }
 
-  async deleteCard(id) {
-    const res = await fetch(`${this._baseUrl}/cards/${id}`, {
+  deleteCard(id) {
+    return fetch(`${this._baseUrl}/cards/${id}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: this._headers
-    });
-    return this._getResponseData(res);
+    }).then(this._getResponseData)
   }
 
-  async addLike(id) {
-    const res = await fetch(`${this._baseUrl}/cards/${id}/likes`, {
+  deleteLike(id) {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+      method: 'DELETE',
+      headers: this._headers
+    }).then(this._getResponseData)
+  }
+
+  addLike(id) {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       method: 'PUT',
       credentials: 'include',
       headers: this._headers
-    });
-    return this._getResponseData(res);
-  }
-
-  async deleteLike(id) {
-    const res = await fetch(`${this._baseUrl}/cards/${id}/likes`, {
-      method: 'DELETE',
-      headers: this._headers
-    });
-    return this._getResponseData(res);
-  }
-
-  // Юзер
-  async getProfile() {
-    const res = await fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
-      credentials: 'include', // Add this line to include cookies
-    });
-    return this._getResponseData(res);
-  }
-
-  async editProfile(name, about) {
-    const res = await fetch(`${this._baseUrl}/users/me`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: this._headers,
-      body: JSON.stringify({
-        name: name,
-        about: about
-      })
-    });
-    return this._getResponseData(res);
-  }
-
-  async updateUserPic(avatarLink) {
-    const res = await fetch(`${this._baseUrl}/users/me/avatar`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: this._headers,
-      body: JSON.stringify({
-        avatar: avatarLink
-      })
-    });
-    return this._getResponseData(res);
+    }).then(this._getResponseData)
   }
 }
 
