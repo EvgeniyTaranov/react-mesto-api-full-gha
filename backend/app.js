@@ -37,11 +37,22 @@ app.use(cors({
   credentials: true,
 }));
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://evgeniytaranov.nomoredomainsicu.ru');
+  // Разрешите отправку куки и заголовков авторизации (если необходимо)
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // Разрешите определенные HTTP-методы (например, GET, POST, OPTIONS)
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  // Разрешите определенные HTTP-заголовки (например, Content-Type, Authorization)
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 // app.use(cors());
 
 app.use(express.json());
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignUp, createUser);
