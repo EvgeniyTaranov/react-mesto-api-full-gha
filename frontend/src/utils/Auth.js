@@ -10,7 +10,7 @@ class Auth {
     if (res.ok) {
       return res.json()
     } else {
-      return Promise.reject(`Ошибка...: ${res.status}`)
+      return Promise.reject(`Ошибка.....: ${res.status}`)
     };
   };
 
@@ -28,7 +28,7 @@ class Auth {
   login(email, password) {
     return fetch(`${this._baseUrl}/signin`, {
       method: 'POST',
-      credentials: 'include',
+      credentials: "include",
       headers: this._headers,
       body: JSON.stringify({
         "password": password,
@@ -40,19 +40,17 @@ class Auth {
   logout() {
     return fetch(`${this._baseUrl}/signout`, {
       method: 'GET',
-      credentials: 'include',
-    }).then(this._checkResponse).catch(error => {
-      console.log('Ошибка...:', error);
-    });
+      credentials: "include"
+    }).then(this._checkResponse);
   }
 
   checkToken() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
-      credentials: 'include',
-      headers: this._headers,
+      credentials: "include"
     }).then(this._checkResponse);
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new Auth();
