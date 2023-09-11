@@ -27,31 +27,37 @@ const corsOptions = {
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://evgeniytaranov.nomoredomainsicu.ru');
-  // Разрешите отправку куки и заголовков авторизации (если необходимо)
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  // Разрешите определенные HTTP-методы (например, GET, POST, OPTIONS)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  // Разрешите определенные HTTP-заголовки (например, Content-Type, Authorization)
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'https://evgeniytaranov.nomoredomainsicu.ru');
+//   // Разрешите отправку куки и заголовков авторизации (если необходимо)
+//   res.setHeader('Access-Control-Allow-Credentials', 'true');
+//   // Разрешите определенные HTTP-методы (например, GET, POST, OPTIONS)
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+//   // Разрешите определенные HTTP-заголовки (например, Content-Type, Authorization)
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   next();
+// });
 
 // app.use(cors());
+
+app.use(cookieParser());
 
 app.use(express.json());
 
 app.use(cors(corsOptions));
 
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+app.use(auth);
+
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignUp, createUser);
 
 app.get('signout', logout);
-
-app.use(cookieParser());
-
-app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
@@ -71,7 +77,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb://0.0.0.0:27017/mestodb', {
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
 
