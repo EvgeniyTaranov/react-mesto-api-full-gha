@@ -1,6 +1,7 @@
 class Auth {
   constructor() {
     this._baseUrl = 'https://api.evgeniytaranov.nomoredomainsicu.ru';
+    // this._baseUrl = 'http://localhost:4000';
     this._headers = {
       'Content-Type': 'application/json'
     }
@@ -10,7 +11,7 @@ class Auth {
     if (res.ok) {
       return res.json()
     } else {
-      return Promise.reject(`Ошибка.....: ${res.status}`)
+      return Promise.reject(`Ошибка...: ${res.status}`)
     };
   };
 
@@ -36,10 +37,10 @@ class Auth {
     }).then(this._checkResponse);
   }
 
-  checkToken(token) {
+  checkToken() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
-      headers: { ...this._headers, "Authorization": `Bearer ${token}` }
+      headers: this._headers,
     }).then(this._checkResponse);
   }
 }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const validationError = require('mongoose').Error.ValidationError;
 const castError = require('mongoose').Error.CastError;
 const bcrypt = require('bcryptjs');
@@ -7,6 +8,8 @@ const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const UnauthorizedError = require('../errors/unauthorizedError');
+
+const jwtSecret = process.env.JWT_SECRET;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -111,7 +114,7 @@ module.exports.login = async (req, res, next) => {
 
     const token = jwt.sign(
       { _id: user._id },
-      'big-daddy-caddy',
+      jwtSecret,
       { expiresIn: '7d' },
     );
 
@@ -119,6 +122,7 @@ module.exports.login = async (req, res, next) => {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
       sameSite: true,
+      secure: true, // Set to true if running over HTTPS
     });
 
     res.send({ jwt: token });
