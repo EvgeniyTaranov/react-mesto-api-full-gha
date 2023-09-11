@@ -107,23 +107,23 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       const userAgent = req.get('User-Agent');
-      const regEx = /Chrome\/\d+/;
-      if (userAgent.match(regEx) && userAgent.match(regEx).toString().replace('Chrome/', '') > 80) {
-        res.cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: 'None',
-          secure: true,
-        });
-      } else {
-        res.cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: 'Strict',
-        });
+      const regEx = /Chrome\/(\d+)/;
+      const isChrome = userAgent.match(regEx);
+
+      const cookieOptions = {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+      };
+
+      if (!isChrome || (isChrome && parseInt(isChrome[1], 10) <= 80)) {
+        cookieOptions.sameSite = 'Strict';
       }
-      res.send({ jwt: token })
-        .end();
+
+      res.cookie('jwt', token, cookieOptions);
+
+      res.send({ jwt: token });
     })
     .catch((err) => {
       next(err);
