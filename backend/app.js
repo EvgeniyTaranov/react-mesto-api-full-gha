@@ -64,6 +64,11 @@ app.use((err, req, res, next) => {
   next();
 });
 
+app.get('/check-cookies', (req, res) => {
+  console.log('Cookies:', req.cookies);
+  res.send('Cookies logged in the console');
+});
+
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
