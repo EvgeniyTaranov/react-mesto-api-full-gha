@@ -9,7 +9,7 @@ const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
-const jwtSecret = process.env.JWT_SECRET;
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -114,7 +114,7 @@ module.exports.login = async (req, res, next) => {
 
     const token = jwt.sign(
       { _id: user._id },
-      jwtSecret,
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
       { expiresIn: '7d' },
     );
 
