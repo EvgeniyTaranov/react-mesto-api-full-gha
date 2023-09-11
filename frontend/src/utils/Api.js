@@ -14,6 +14,7 @@ class Api {
   // Карточки
   async getCards() {
     const res = await fetch(`${this._baseUrl}/cards`, {
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(res);
@@ -22,6 +23,7 @@ class Api {
   async addCard(name, link) {
     const res = await fetch(`${this._baseUrl}/cards`, {
       method: 'POST',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name,
@@ -34,6 +36,7 @@ class Api {
   async deleteCard(id) {
     const res = await fetch(`${this._baseUrl}/cards/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(res);
@@ -42,6 +45,7 @@ class Api {
   async addLike(id) {
     const res = await fetch(`${this._baseUrl}/cards/${id}/likes`, {
       method: 'PUT',
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(res);
@@ -58,7 +62,8 @@ class Api {
   // Юзер
   async getProfile() {
     const res = await fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers
+      headers: this._headers,
+      credentials: 'include', // Add this line to include cookies
     });
     return this._getResponseData(res);
   }
@@ -66,6 +71,7 @@ class Api {
   async editProfile(name, about) {
     const res = await fetch(`${this._baseUrl}/users/me`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name: name,
@@ -78,6 +84,7 @@ class Api {
   async updateUserPic(avatarLink) {
     const res = await fetch(`${this._baseUrl}/users/me/avatar`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         avatar: avatarLink

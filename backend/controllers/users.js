@@ -131,6 +131,22 @@ module.exports.login = async (req, res, next) => {
   }
 };
 
+module.exports.logout = (req, res) => {
+  const userAgent = req.get('User-Agent');
+  const regEx = /Chrome\/\d+/;
+  if (userAgent.match(regEx) && userAgent.match(regEx).toString().replace('Chrome/', '') > 80) {
+    res.clearCookie('jwt', {
+      sameSite: 'None',
+      secure: true,
+    });
+  } else {
+    res.clearCookie('jwt', {
+      sameSite: 'Strict',
+    });
+  }
+  res.send({ message: 'Выход' });
+};
+
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then(((data) => res.send(data)))

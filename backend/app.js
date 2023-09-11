@@ -7,7 +7,7 @@ const cors = require('cors');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const NotFoundError = require('./errors/notFoundError');
-const { login, createUser } = require('./controllers/users');
+const { login, createUser, logout } = require('./controllers/users');
 const { validateSignIn, validateSignUp } = require('./middlewares/validation');
 const auth = require('./middlewares/auth');
 
@@ -33,6 +33,8 @@ app.use(cors(corsOptions));
 
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignUp, createUser);
+
+app.get('signout', logout);
 
 app.use(cookieParser());
 

@@ -1,7 +1,6 @@
 class Auth {
   constructor() {
     this._baseUrl = 'https://api.evgeniytaranov.nomoredomainsicu.ru';
-    // this._baseUrl = 'http://localhost:4000';
     this._headers = {
       'Content-Type': 'application/json'
     }
@@ -29,6 +28,7 @@ class Auth {
   login(email, password) {
     return fetch(`${this._baseUrl}/signin`, {
       method: 'POST',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         "password": password,
@@ -37,9 +37,19 @@ class Auth {
     }).then(this._checkResponse);
   }
 
+  logout() {
+    return fetch(`${this._baseUrl}/signout`, {
+      method: 'GET',
+      credentials: 'include',
+    }).then(this._checkResponse).catch(error => {
+      console.log('Ошибка...:', error);
+    });
+  }
+
   checkToken() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
+      credentials: 'include',
       headers: this._headers,
     }).then(this._checkResponse);
   }
