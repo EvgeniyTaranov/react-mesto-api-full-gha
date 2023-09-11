@@ -15,7 +15,19 @@ const INTERNAL_SERVER_ERROR = 500;
 // const { PORT = 3000 } = process.env;
 const { PORT = 4000 } = process.env;
 
-const corsOptions = {
+// const corsOptions = {
+//   origin: ['http://localhost:3000',
+//     'http://localhost:4000',
+//     'https://api.evgeniytaranov.nomoredomainsicu.ru',
+//     'http://api.evgeniytaranov.nomoredomainsicu.ru',
+//     'https://evgeniytaranov.nomoredomainsicu.ru',
+//     'http://evgeniytaranov.nomoredomainsicu.ru'],
+//   credentials: true,
+// };
+
+const app = express();
+
+app.use(cors({
   origin: ['http://localhost:3000',
     'http://localhost:4000',
     'https://api.evgeniytaranov.nomoredomainsicu.ru',
@@ -23,9 +35,7 @@ const corsOptions = {
     'https://evgeniytaranov.nomoredomainsicu.ru',
     'http://evgeniytaranov.nomoredomainsicu.ru'],
   credentials: true,
-};
-
-const app = express();
+}));
 
 // app.use(cors());
 
