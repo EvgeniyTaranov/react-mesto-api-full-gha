@@ -2,9 +2,9 @@ const validationError = require('mongoose').Error.ValidationError;
 const castError = require('mongoose').Error.CastError;
 const Card = require('../models/card');
 
-const BadRequestError = require('../errors/badRequestError');
-const NotFoundError = require('../errors/notFoundError');
-const ForbiddenError = require('../errors/forbiddenError');
+const BadRequest = require('../errors/BadRequest');
+const NotFound = require('../errors/NotFound');
+const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -12,7 +12,7 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createCard = (req, res, next) => {
+module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
 
   const cardData = {
@@ -27,7 +27,7 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof validationError) {
-        next(new BadRequestError('Ошибка при валидации'));
+        next(new BadRequest('Ошибка при валидации'));
       } else {
         next(err);
       }
@@ -37,25 +37,28 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
-    .orFail(new NotFoundError(`Карточка с id '${cardId}' не найдена`))
+    // eslint-disable-next-line consistent-return
     .then((card) => {
-      if (!(card.owner.toString() === req.user._id)) {
-        return next(new ForbiddenError('Вы не можете удалять чужие карточки'));
+      if (card === null) {
+        return next(new NotFound('Карточка с таким id не найдена'));
       }
-      return Card.findByIdAndRemove(cardId)
+      if (!(card.owner.toString() === req.user._id)) {
+        return next(new Forbidden('Вы не можете удалять чужие карточки'));
+      }
+      Card.findByIdAndRemove(cardId)
         // eslint-disable-next-line consistent-return
         .then((data) => {
           if (data) {
             return res.send({ message: 'Карточка удалена' });
           }
         })
-        .catch(next);
+        .catch((err) => {
+          if (err instanceof castError) {
+            next(new BadRequest('Передан некорректный id карточки'));
+          } else { next(err); }
+        });
     })
-    .catch((err) => {
-      if (err instanceof castError) {
-        next(new BadRequestError('Передан некорректный id карточки'));
-      } else { next(err); }
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -64,17 +67,16 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .populate('owner')
     .then((card) => {
       if (card) {
         res.send({ data: card });
       } else {
-        next(new NotFoundError('Карточка с таким id не найдена'));
+        next(new NotFound('Карточка с таким id не найдена'));
       }
     })
     .catch((err) => {
       if (err instanceof castError) {
-        next(new BadRequestError('Передан некорректный id карточки'));
+        next(new BadRequest('Передан некорректный id карточки'));
       } else {
         next(err);
       }
@@ -87,12 +89,12 @@ module.exports.dislikeCard = (req, res, next) => {
       if (card) {
         res.send({ data: card });
       } else {
-        next(new NotFoundError('Карточка с таким id не найдена'));
+        next(new NotFound('Карточка с таким id не найдена'));
       }
     })
     .catch((err) => {
       if (err instanceof castError) {
-        next(new BadRequestError('Передан некорректный id карточки'));
+        next(new BadRequest('Передан некорректный id карточки'));
       } else {
         next(err);
       }
