@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -15,6 +15,8 @@ const INTERNAL_SERVER_ERROR = 500;
 // const { PORT = 3000 } = process.env;
 const { PORT = 4000 } = process.env;
 
+const app = express();
+
 const corsOptions = {
   origin: ['http://localhost:3000',
     'http://localhost:4000',
@@ -25,13 +27,11 @@ const corsOptions = {
   credentials: true,
 };
 
-const app = express();
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
 app.use(express.json());
-
-app.use(cors(corsOptions));
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -39,12 +39,12 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use(auth);
-
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignUp, createUser);
 
 app.get('signout', logout);
+
+app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);

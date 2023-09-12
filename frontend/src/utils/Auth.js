@@ -10,7 +10,7 @@ class Auth {
     if (res.ok) {
       return res.json()
     } else {
-      return Promise.reject(`Ошибка.....: ${res.status}`)
+      return Promise.reject(`Ошибка...: ${res.status}`)
     };
   };
 
@@ -40,14 +40,14 @@ class Auth {
   logout() {
     return fetch(`${this._baseUrl}/signout`, {
       method: 'GET',
-      credentials: "include"
+      credentials: "include",
     }).then(this._checkResponse);
   }
 
   checkToken() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
-      credentials: "include"
+      credentials: "include",
     }).then(this._checkResponse);
   }
 }

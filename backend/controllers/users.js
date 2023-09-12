@@ -155,8 +155,7 @@ module.exports.login = (req, res, next) => {
           sameSite: 'Strict',
         });
       }
-      res.send({ jwt: token })
-        .end();
+      res.send({ jwt: token });
     })
     .catch((err) => {
       next(err);
