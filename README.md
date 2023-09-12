@@ -1,16 +1,9 @@
-[![Статус тестов](../../actions/workflows/tests.yml/badge.svg)](../../actions/workflows/tests.yml)
+## Ссылки
 
-# react-mesto-api-full
-Репозиторий для приложения проекта `Mesto`, включающий фронтенд и бэкенд части приложения со следующими возможностями: авторизации и регистрации пользователей, операции с карточками и пользователями. Бэкенд расположите в директории `backend/`, а фронтенд - в `frontend/`. 
-  
-Пожалуйста, прикрепите в это описание ссылку на сайт, размещенный на Яндекс.Облаке.
+IP-адрес: 51.250.82.42
 
-Адрес репозитория: https://github.com/...
+Frontend: https://evgeniytaranov.nomoredomainsicu.ru
 
-## Ссылки на проект
+Backend: https://api.evgeniytaranov.nomoredomainsicu.ru
 
-IP-адрес x.x.x.x
-
-Frontend https://...
-
-Backend https://...
+Адрес репозитория: https://github.com/EvgeniyTaranov/react-mesto-api-full-gha
