@@ -51,7 +51,7 @@ function EditProfilePopup({ isOpen, onUpdateProfile, onClose }) {
                     name="name"
                     type="text"
                     placeholder="Введите имя"
-                    required=""
+                    // required=""
                     minLength={2}
                     maxLength={40}
                     className="popup__field popup__field_input_name"
