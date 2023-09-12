@@ -37,8 +37,8 @@ function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    function handleUpdateUser({ newName, newAbout }) {
-        api.editProfile(newName.name, newAbout.about)
+    function handleUpdateUser({ name, about }) {
+        api.editProfile(name, about)
             .then(result => {
                 setCurrentUser(result.data);
                 closeAllPopups();
