@@ -37,16 +37,15 @@ function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    function handleUpdateUser({ name, about }) {
-        api.editProfile(name, about)
-            .then(result => {
-                setCurrentUser(result.data);
-                closeAllPopups();
-            })
-            .catch(error => {
-                console.log('Ошибка...:', error);
-            });
-    }
+    const handleUpdateUser = async (userData) => {
+        try {
+            const updatedUser = await api.editProfile(userData.name, userData.about);
+            setCurrentUser(updatedUser);
+            closeAllPopups();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleInfoTooltipOpen = () => {
         setIsInfoTooltipOpen(true);
