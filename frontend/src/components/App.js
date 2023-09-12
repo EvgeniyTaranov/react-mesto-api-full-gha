@@ -37,7 +37,7 @@ function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    function handleUpdateUser({ name, about }) {
+    function handleUpdateProfile({ name, about }) {
         api.editProfile(name, about)
             .then(result => {
                 setCurrentUser(result.data);
@@ -236,7 +236,7 @@ function App() {
                 <EditProfilePopup
                     isOpen={isEditProfilePopupOpen}
                     onClose={closeAllPopups}
-                    onUpdateUser={handleUpdateUser}
+                    onUpdateProfile={handleUpdateProfile}
                 />
                 <EditAvatarPopup
                     isOpen={isEditAvatarPopupOpen}
