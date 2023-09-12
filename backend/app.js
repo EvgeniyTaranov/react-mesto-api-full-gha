@@ -7,21 +7,24 @@ const router = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const INTERNAL_SERVER_ERROR = 500;
-const { PORT = 3200 } = process.env;
+const { PORT = 4000 } = process.env;
 
 const corsOptions = {
   origin: ['http://localhost:3000',
-    'http://localhost:3200',
-    'https://bjelkier.nomoredomainsicu.ru',
-    'http://api.bjelkier.nomoredomainsicu.ru',
-    'http://bjelkier.nomoredomainsicu.ru',
-    'https://api.bjelkier.nomoredomainsicu.ru'],
+    'http://localhost:4000',
+    'https://evgeniytaranov.nomoredomainsicu.ru',
+    'http://evgeniytaranov.nomoredomainsicu.ru',
+    'http://evgeniytaranov.nomoredomainsicu.ru',
+    'https://evgeniytaranov.nomoredomainsicu.ru'],
   credentials: true,
 };
 
 const app = express();
+
 app.use(cookieParser());
+
 app.use(requestLogger);
+
 app.use(express.json());
 
 app.use(cors(corsOptions));
