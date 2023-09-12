@@ -28,8 +28,9 @@ class Api {
 
   editProfile(name, about) {
     return fetch(`${this._baseUrl}/users/me`, {
-      credentials: 'include',
       method: 'PATCH',
+      credentials: 'include',
+      headers: this._headers,
       body: JSON.stringify({
         name: name,
         about: about

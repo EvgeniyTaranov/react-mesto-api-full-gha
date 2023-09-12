@@ -26,7 +26,7 @@ const validateId = (Id) => {
 
 module.exports.validationUserInfo = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().max(30),
+    name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
   }),
 });
