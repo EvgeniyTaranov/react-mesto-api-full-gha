@@ -2,33 +2,38 @@ import React, { useContext, useState, useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
 import CurrentUserContext from '../contexts/CurrentUserContext';
 
-const EditProfilePopup = ({ isOpen, onClose, onUpdateProfile }) => {
+function EditProfilePopup({ isOpen, onUpdateProfile, onClose }) {
     const currentUser = useContext(CurrentUserContext);
+    const [about, setAbout] = useState('');
     const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+    const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
     useEffect(() => {
         if (currentUser) {
             setName(currentUser.name);
-            setDescription(currentUser.about);
+            setAbout(currentUser.about);
         }
     }, [currentUser, isOpen]);
 
-    const handleChangeName = (e) => {
-        setName(e.target.value);
-    };
+    useEffect(() => {
+        setIsSubmitDisabled(!name || !about);
+    }, [name, about]);
 
-    const handleChangeDescription = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleSubmit = (e) => {
+    function handleSubmit(e) {
         e.preventDefault();
         onUpdateProfile({
             name: name,
-            about: description,
+            about: about,
         });
-    };
+    }
+
+    function handleChangeName(e) {
+        setName(e.target.value);
+    }
+
+    function handleChangeAbout(e) {
+        setAbout(e.target.value);
+    }
 
     return (
         <PopupWithForm
@@ -37,6 +42,7 @@ const EditProfilePopup = ({ isOpen, onClose, onUpdateProfile }) => {
             isOpen={isOpen}
             onClose={onClose}
             onSubmit={handleSubmit}
+            isSubmitDisabled={isSubmitDisabled}
             submitButtonLabel="Сохранить"
         >
             <div className="popup__fieldset">
@@ -62,8 +68,8 @@ const EditProfilePopup = ({ isOpen, onClose, onUpdateProfile }) => {
                     minLength={2}
                     maxLength={200}
                     className="popup__field popup__field_input_about"
-                    value={description}
-                    onChange={handleChangeDescription}
+                    value={about}
+                    onChange={handleChangeAbout}
                 />
                 <span className="about-field-error popup__field-error" />
             </div>
