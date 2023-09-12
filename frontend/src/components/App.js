@@ -18,58 +18,39 @@ import Register from "./Register";
 import successfulAttemptImage from "../images/succesful-auth.svg";
 import failedAttemptImage from "../images/failed-auth.svg";
 
-const App = () => {
+function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+    const [registrationResult, setRegistrationResult] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
     const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
-    const [registrationResult, setRegistrationResult] = useState(false);
-    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [cards, setCards] = useState([]);
     const [loggedIn, setLoggedIn] = useState(false);
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState('')
     const navigate = useNavigate();
-
-    const closeAllPopups = () => {
-        setIsEditProfilePopupOpen(false);
-        setIsAddPlacePopupOpen(false);
-        setIsEditAvatarPopupOpen(false);
-        setIsInfoTooltipOpen(false);
-        setIsConfirmationPopupOpen(false);
-        setSelectedCard(null);
-    };
-
-    useEffect(() => {
-        const getUserInfo = async () => {
-            try {
-                const response = await api.getProfile();
-                setCurrentUser(response);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        getUserInfo();
-    }, []);
-
-    useEffect(() => {
-        const getCards = async () => {
-            try {
-                const response = await api.getCards();
-                setCards(response);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        getCards();
-    }, []);
 
     useEffect(() => {
         handleTokenCheck();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    function handleUpdateUser({ name, about }) {
+        api.editProfile(name, about)
+            .then(result => {
+                setCurrentUser(result.data);
+                closeAllPopups();
+            })
+            .catch(error => {
+                console.log('Ошибка...:', error);
+            });
+    }
+
+    const handleInfoTooltipOpen = () => {
+        setIsInfoTooltipOpen(true);
+    }
 
     function onEditProfile() {
         setIsEditProfilePopupOpen(true);
@@ -83,145 +64,134 @@ const App = () => {
         setIsEditAvatarPopupOpen(true);
     }
 
-    const handleCardClick = (card) => {
-        setSelectedCard(card);
-    };
-
     function onConfirmationPopup() {
         setIsConfirmationPopupOpen(true);
     }
 
-    const handleInfoTooltipOpen = () => {
-        setIsInfoTooltipOpen(true);
-    };
-
-    function handleTokenCheck() {
-        if (localStorage.getItem('token')) {
-            const token = localStorage.getItem('token');
-            auth.checkToken(token)
-                .then((res) => {
-                    setLoggedIn(true);
-                    setEmail(res.data.email);
-                    navigate('/', { replace: true });
-                })
-                .catch((err) => {
-                    console.log('Ошибка:', err);
-                });
-        }
+    function handleCardClick(card) {
+        setSelectedCard(card);
     }
 
-    function handleLogin(loginData) {
-        auth.login(loginData.email, loginData.password)
-            .then((res) => {
-                localStorage.setItem('token', res.token);
-                handleTokenCheck();
+    function handleCardLike(card) {
+        api.addLike(card._id)
+            .then(updatedCard => {
+                const updatedCards = cards.map(c => (c._id === card._id ? updatedCard.data : c));
+                setCards(updatedCards);
             })
-            .catch((err) => {
-                console.log('Ошибка...:', err);
-                setRegistrationResult(false);
-                handleInfoTooltipOpen();
+            .catch(error => {
+                console.log('Ошибка...:', error);
             });
     }
 
-    const handleCardLike = async (card) => {
-        const isLiked = card.likes.some((like) => like._id === currentUser._id);
+    function handleCardDislike(card) {
+        api.deleteLike(card._id)
+            .then(updatedCard => {
+                const updatedCards = cards.map(c => (c._id === card._id ? updatedCard.data : c));
+                setCards(updatedCards);
+            })
+            .catch(error => {
+                console.log('Ошибка...:', error);
+            });
+    }
 
-        try {
-            let updatedCard;
-
-            if (isLiked) {
-                updatedCard = await api.deleteLike(card._id);
-            } else {
-                updatedCard = await api.addLike(card._id);
-            }
-
-            setCards((prevCards) =>
-                prevCards.map((c) => (c._id === card._id ? updatedCard : c))
-            );
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleCardDislike = async (card) => {
-        const isLiked = card.likes.some((like) => like._id === currentUser._id);
-
-        try {
-            let updatedCard;
-
-            if (isLiked) {
-                updatedCard = await api.deleteLike(card._id);
-            } else {
-                updatedCard = await api.addLike(card._id);
-            }
-
-            setCards((prevCards) =>
-                prevCards.map((c) => (c._id === card._id ? updatedCard : c))
-            );
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleCardDelete = (cardToDelete) => {
-        api.deleteCard(cardToDelete._id)
+    function handleCardDelete(card) {
+        api.deleteCard(card._id)
             .then(() => {
-                setCards((prevCards) => prevCards.filter((card) => card._id !== cardToDelete._id));
+                setCards(cards.filter(item => item._id !== card._id));
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(error => {
+                console.log('Ошибка...:', error);
             });
-    };
+    }
 
-    const handleUpdateUser = async (userData) => {
-        try {
-            const updatedUser = await api.editProfile(userData.name, userData.about);
-            setCurrentUser(updatedUser);
-            closeAllPopups();
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleUpdateAvatar = async (avatarData) => {
-        try {
-            const updatedUser = await api.updateUserPic(avatarData.avatar);
-            setCurrentUser(updatedUser);
-            closeAllPopups();
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleAddPlaceSubmit = (newCardData) => {
-        api.addCard(newCardData.name, newCardData.link)
-            .then((newCard) => {
-                setCards((prevCards) => [newCard, ...prevCards]);
+    function handleUpdateAvatar(newAvatar) {
+        api.updateUserPic(newAvatar.avatar)
+            .then((result) => {
+                setCurrentUser(result.data);
                 closeAllPopups();
             })
             .catch((error) => {
-                console.log(error);
+                console.log('Ошибка...:', error);
             });
-    };
+    }
+
+    function handleAddPlaceSubmit(data) {
+        api.addCard(data.name, data.link)
+            .then(newCard => {
+
+                setCards([newCard.data, ...cards]);
+                setIsAddPlacePopupOpen(false);
+            })
+            .catch(error => {
+                console.log('Ошибка...:', error);
+            });
+    }
+
+    function closeAllPopups() {
+        setIsEditProfilePopupOpen(false);
+        setIsAddPlacePopupOpen(false);
+        setIsEditAvatarPopupOpen(false);
+        setIsConfirmationPopupOpen(false);
+        setIsInfoTooltipOpen(false);
+        setSelectedCard(null);
+    }
 
     function handleRegistration(registerData) {
         auth.register(registerData.email, registerData.password)
             .then((res) => {
-                navigate('/sign-in', { replace: true });
+                navigate('/sign-in', { replace: true })
                 setRegistrationResult(true);
                 handleInfoTooltipOpen();
             })
             .catch((err) => {
                 console.log('Ошибка...:', err);
                 setRegistrationResult(false);
-                handleInfoTooltipOpen();
-            });
+                handleInfoTooltipOpen()
+            })
+    };
+
+    function handleLogin(loginData) {
+        auth.login(loginData.email, loginData.password).then((res) => {
+            handleTokenCheck();
+        })
+            .catch((err) => {
+                console.log('Ошибка...:', err);
+                setRegistrationResult(false);
+                handleInfoTooltipOpen()
+            })
+    }
+
+    function handleTokenCheck() {
+        auth.checkToken().then((res) => {
+            navigate('/', { replace: true });
+            setLoggedIn(true);
+            setEmail(res.email);
+
+            api.getProfile()
+                .then(data => {
+                    setCurrentUser(data);
+                    api.getCards()
+                        .then(data => {
+                            setCards(data);
+                        })
+                        .catch(error => {
+                            console.log('Ошибка...:', error);
+                        });
+                })
+                .catch(error => {
+                    console.log('Ошибка...:', error);
+                });
+
+        }).catch((err) => {
+            setEmail('');
+            setLoggedIn(false);
+        });
     }
 
     function handleExit() {
-        localStorage.removeItem('token');
+        auth.logout();
         setEmail('');
-        setLoggedIn(false);
+        setLoggedIn(false)
     }
 
     return (
