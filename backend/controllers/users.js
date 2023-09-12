@@ -4,9 +4,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const User = require('../models/user');
-const BadRequest = require('../errors/BadRequest');
-const NotFound = require('../errors/NotFound');
-const Conflict = require('../errors/Conflict');
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
+const ConflictError = require('../errors/conflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -23,12 +23,12 @@ module.exports.getUserById = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        next(new NotFound('Пользователь с таким id не найден'));
+        next(new NotFoundError('Пользователь с таким id не найден'));
       }
     }))
     .catch((err) => {
       if (err instanceof castError) {
-        next(new BadRequest('Передан некорректный id'));
+        next(new BadRequestError('Передан некорректный id'));
       } else {
         next(err);
       }
@@ -58,10 +58,10 @@ module.exports.createUser = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new Conflict('Данный email уже используется'));
+            next(new ConflictError('Данный email уже используется'));
           }
           if (err instanceof validationError) {
-            next(new BadRequest('Ошибка при валидации'));
+            next(new BadRequestError('Ошибка при валидации'));
           } else {
             next(err);
           }
@@ -76,7 +76,7 @@ module.exports.updateUser = (req, res, next) => {
     .then(((user) => res.send({ data: user })))
     .catch((err) => {
       if (err instanceof validationError) {
-        next(new BadRequest('Ошибка при валидации'));
+        next(new BadRequestError('Ошибка при валидации'));
       } else {
         next(err);
       }
@@ -89,7 +89,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .then(((user) => res.send({ data: user })))
     .catch((err) => {
       if (err instanceof validationError) {
-        next(new BadRequest('Ошибка при валидации'));
+        next(new BadRequestError('Ошибка при валидации'));
       } else {
         next(err);
       }
