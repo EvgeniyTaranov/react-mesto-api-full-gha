@@ -25,7 +25,7 @@ const EditProfilePopup = ({ isOpen, onClose, onUpdateUser }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         onUpdateUser({
-            name,
+            name: name,
             about: description,
         });
     };
